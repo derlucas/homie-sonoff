@@ -25,10 +25,10 @@ void setRelays() {
   if (relay1) b++;
   if (relay2) b += 2;
  
-  SERIAL_PORT_HARDWARE.write((byte)0xA0);
-  SERIAL_PORT_HARDWARE.write((byte)0x04);
-  SERIAL_PORT_HARDWARE.write((byte)b);
-  SERIAL_PORT_HARDWARE.write((byte)0xA1);;
+  Serial.write((byte)0xA0);
+  Serial.write((byte)0x04);
+  Serial.write((byte)b);
+  Serial.write((byte)0xA1);;
   
   Serial.flush();
 }
