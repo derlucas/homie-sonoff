@@ -5,4 +5,8 @@ void initDevice(void);
 void getTempHumi(void);
 void getAdcSensorValue(void);
 
+#ifdef CO2_ENABLED
+void getCO2(void);
+#endif
+
 #endif

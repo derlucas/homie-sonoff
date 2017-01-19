@@ -1,5 +1,5 @@
-#include "sample_data.h"
 #include "global.h"
+#include "sample_data.h"
 
 static bool get_temp_humi_flag = false;
 static bool get_ad_value_flag = false;
@@ -22,7 +22,12 @@ void debugData(void) {
   Serial.print(",");
   Serial.print(sensor_dev[2].average_value);
   Serial.print(",");
-  Serial.println(sensor_dev[0].average_value);
+  Serial.print(sensor_dev[0].average_value);
+  Serial.print(",");
+#ifdef CO2_ENABLED
+  Serial.print(sensor_dev[4].average_value);
+#endif
+  Serial.println(",");
 }
 
 void setup() {
@@ -37,6 +42,9 @@ void loop() {
   if(currentMillis - dht11Millis > 1000) {
     dht11Millis = currentMillis;
     getTempHumi();
+#ifdef CO2_ENABLED
+    getCO2();
+#endif
   }
   
   // timing when we sample the ADC seems critical, so this is based on ISR

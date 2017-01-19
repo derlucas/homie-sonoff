@@ -4,6 +4,12 @@
 #include "Arduino.h"
 #include <inttypes.h>
 
+// comment in/out if you want to use a MH-Z14 CO2 Sensor
+// connect the Sensor to GND and +3,3V
+// connect Sensor RX to 13 (ISP header Pin 1)
+// connect Sensor TX to 12 (ISP header Pin 3)
+#define CO2_ENABLED
+
 
 typedef struct _sensorDev {
   union {
@@ -21,7 +27,10 @@ typedef struct _sensorDev {
   int pin;
 } sensorDev;
 
+#ifdef CO2_ENABLED
+extern sensorDev sensor_dev[5];
+#else
 extern sensorDev sensor_dev[4];
-
+#endif
 
 #endif

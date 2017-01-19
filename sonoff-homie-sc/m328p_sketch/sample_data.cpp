@@ -1,8 +1,9 @@
+#include <SoftwareSerial.h>
 #include "global.h"
 #include "sample_data.h"
 #include "TimerOne.h"
-
 #include "dht11.h"
+
 #define  AD_NUMREADINGS     (50)
 #define  NOISE_NUM          (10)
 #define  DHT11_NUMREADINGS  (5)
@@ -11,9 +12,15 @@
 #define  LIGHTPIN           A3
 #define  MICROPHONEPIN      A2
 #define  DHT11PIN           6
+#define  MH_Z19_RX          13
+#define  MH_Z19_TX          12
 
+#ifdef CO2_ENABLED
+sensorDev sensor_dev[5];
+SoftwareSerial co2Serial(MH_Z19_RX, MH_Z19_TX); // define MH-Z19
+#else
 sensorDev sensor_dev[4];
-
+#endif
 
 static void initPin(void) {
   pinMode(9,OUTPUT);
@@ -40,13 +47,46 @@ static void initData(void) {
   sensor_dev[3].temp_humi_total[0] = 0;
   sensor_dev[3].temp_humi_total[1] = 0;
   sensor_dev[3].pin = DHT11PIN;
+#ifdef CO2_ENABLED
+  sensor_dev[4].total = 0;
+  sensor_dev[4].level = 0;
+  sensor_dev[4].average_value = 0;
+#endif
 }
 
 void initDevice(void) {
   initPin();
   initPwm();
   initData();
+#ifdef CO2_ENABLED  
+  co2Serial.begin(9600); //Init sensor MH-Z19(14);
+  co2Serial.setTimeout(300);
+#endif
 }
+
+#ifdef CO2_ENABLED
+void getCO2() {
+  byte cmd[9] = {0xFF, 0x01, 0x86, 0x00, 0x00, 0x00, 0x00, 0x00, 0x79};
+  // command to ask for data
+  byte response[9]; // for answer
+
+  co2Serial.write(cmd, 9); //request PPM CO2
+  co2Serial.readBytes(response, 9);
+  
+  if (response[0] != 0xFF) {
+    return;
+  }
+
+  if (response[1] != 0x86) {
+    return;
+  }
+
+  int responseHigh = (int) response[2];
+  int responseLow = (int) response[3];
+  int ppm = (256 * responseHigh) + responseLow;
+  sensor_dev[4].average_value = ppm;
+}
+#endif
 
 void getTempHumi(void) {
   static uint8_t readIndex = 0;

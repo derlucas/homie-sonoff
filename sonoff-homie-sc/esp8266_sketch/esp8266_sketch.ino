@@ -1,6 +1,8 @@
 #define MQTT_MAX_PACKET_SIZE 400
-
 #include <Homie.h>
+
+// comment in/out if you want to use a MH-Z14 CO2 Sensor
+#define CO2_ENABLED
 
 /**
   * Arduino IDE instructions
@@ -20,24 +22,27 @@
 const int INTERVAL = 10000;
 unsigned long lastSent = 0;
 
-HomieNode temperatureNode("temperature", "temperature");
-HomieNode humidityNode("humidity", "humidity");
-HomieNode lightNode("light", "light");
-//HomieNode noiseNode("noise", "noise");
-//HomieNode dustyNode("dusty", "dusty");
+HomieNode sonoffNode("sc", "sc");
 
 void setupHandler() {
-  temperatureNode.setProperty("unit").send("c");
+  sonoffNode.setProperty("t-unit").send("c");
+  sonoffNode.setProperty("h-unit").send("%");
+  sonoffNode.setProperty("l-unit").send("lux");
+  sonoffNode.setProperty("n-unit").send("db");
+#ifdef CO2_ENABLED
+  sonoffNode.setProperty("c-unit").send("ppm");
+#endif
 }
 
 String temp;
-int pos, pos2;
-
 String temperature;
 String humidity;
 String light;
 String noise;
 String dusty;
+#ifdef CO2_ENABLED
+String co2;
+#endif
 
 String getValue(String data, char separator, int index) {
   int found = 0;
@@ -55,9 +60,7 @@ String getValue(String data, char separator, int index) {
 }
 
 void loopHandler() {
-
-  pos = pos2 = -1;
-  
+ 
   temp = Serial.readString();
 
   temperature = getValue(temp, ',', 0);
@@ -65,29 +68,37 @@ void loopHandler() {
   light = getValue(temp, ',', 2);
   noise = getValue(temp, ',', 3);
   dusty = getValue(temp, ',', 4);
+#ifdef CO2_ENABLED
+  co2 = getValue(temp, ',', 5);
+#endif
     
   if (millis() - lastSent >= INTERVAL || lastSent == 0) {        
     
     if(temperature.length() > 0) {
-      temperatureNode.setProperty("value").send(temperature);
+      sonoffNode.setProperty("temperature").send(temperature);
     }
 
     if(humidity.length() > 0) {
-      humidityNode.setProperty("value").send(humidity);
+      sonoffNode.setProperty("humidity").send(humidity);
     }
 
     if(light.length() > 0) {
-      lightNode.setProperty("value").send(light);
+      sonoffNode.setProperty("light").send(light);
     }
 
-    /*
     if(noise.length() > 0) {
-      noiseNode.setProperty("value").send(noise);
+      sonoffNode.setProperty("noise").send(noise);
     }
 
     if(dusty.length() > 0) {
-      dustyNode.setProperty("value").send(dusty);
-    } */
+      sonoffNode.setProperty("dusty").send(dusty);
+    }
+
+#ifdef CO2_ENABLED
+     if(co2.length() > 0) {
+      sonoffNode.setProperty("co2").send(co2);
+    }
+#endif
     
     lastSent = millis();
   }
