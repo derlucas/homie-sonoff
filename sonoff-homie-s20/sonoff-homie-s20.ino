@@ -1,4 +1,5 @@
 #include <Homie.h>
+#include <ArduinoOTA.h>
 
 #define PIN_LED     13      // PIN 12 / HSPI_MOSI; UART0_CTS MTCK
 #define PIN_RELAY   12      // PIN 10 / HSPI_MISO MTDI
@@ -48,6 +49,7 @@ void loopHandler() {
     }
     lastButtonState = buttonState;
   }
+  ArduinoOTA.handle();
 }
 
 void setup() {
@@ -66,6 +68,8 @@ void setup() {
   Homie.setResetTrigger(PIN_BUTTON, LOW, 5000);
   Homie.setLoopFunction(loopHandler);
   Homie.setup();
+  ArduinoOTA.setHostname(Homie.getConfiguration().deviceId);
+  ArduinoOTA.begin();
 }
 
 void loop() {
