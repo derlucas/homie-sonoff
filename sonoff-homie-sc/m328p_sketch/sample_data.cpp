@@ -12,7 +12,7 @@
 #define  LIGHTPIN           A3
 #define  MICROPHONEPIN      A2
 #define  DHT11PIN           6
-#define  MH_Z19_RX          13
+#define  MH_Z19_RX          11
 #define  MH_Z19_TX          12
 
 #ifdef CO2_ENABLED
@@ -76,7 +76,7 @@ void getCO2() {
   if (response[0] != 0xFF) {
     return;
   }
-
+  
   if (response[1] != 0x86) {
     return;
   }
