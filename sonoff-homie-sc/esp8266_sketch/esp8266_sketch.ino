@@ -1,5 +1,6 @@
 #define MQTT_MAX_PACKET_SIZE 400
 #include <Homie.h>
+#include <ArduinoOTA.h>
 
 // comment in/out if you want to use a MH-Z14 CO2 Sensor
 #define CO2_ENABLED
@@ -95,13 +96,16 @@ void loopHandler() {
     }
 
 #ifdef CO2_ENABLED
-     if(co2.length() > 0) {
+     if(co2.length() > 0 && co2 != "0" && co2 != "5000") {
+      // discard values where the sensor is not initialized yet
       sonoffNode.setProperty("co2").send(co2);
     }
 #endif
     
     lastSent = millis();
   }
+
+  ArduinoOTA.handle();
 }
 
 
@@ -117,7 +121,8 @@ void setup() {
   Homie.setSetupFunction(setupHandler).setLoopFunction(loopHandler);
 
   Homie.setup();
-  
+  ArduinoOTA.setHostname(Homie.getConfiguration().deviceId);
+  ArduinoOTA.begin();
 }
 
 void loop() {
