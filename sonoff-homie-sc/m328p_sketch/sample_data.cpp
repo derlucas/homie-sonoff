@@ -59,6 +59,7 @@ void initDevice(void) {
   initPwm();
   initData();
 #ifdef CO2_ENABLED  
+  delay(500);
   co2Serial.begin(9600); //Init sensor MH-Z19(14);
   co2Serial.setTimeout(300);
 #endif
