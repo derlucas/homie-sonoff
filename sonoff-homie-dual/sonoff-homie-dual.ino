@@ -1,4 +1,7 @@
 #include <Homie.h>
+#include <ArduinoOTA.h>
+
+#define PIN_LED     13      // PIN 12 / HSPI_MOSI; UART0_CTS MTCK
 
 /**
   * Arduino IDE instructions
@@ -61,11 +64,15 @@ void setup() {
   Homie.disableLogging();
   relayNode1.advertise("on").settable(relayHandler1);
   relayNode2.advertise("on").settable(relayHandler2);
+  
+  Homie.setLedPin(PIN_LED, LOW);
   Homie.setup();
   Serial.begin(19200);
-  Serial.println("hello");
+  ArduinoOTA.setHostname(Homie.getConfiguration().deviceId);
+  ArduinoOTA.begin();
 }
 
 void loop() {
   Homie.loop();
+  ArduinoOTA.handle();
 }
