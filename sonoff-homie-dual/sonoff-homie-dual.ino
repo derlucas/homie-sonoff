@@ -25,8 +25,8 @@ HomieNode relayNode2("switch2", "switch");
 
 void setRelays() {
   byte b = 0;
-  if (relay1) b++;
-  if (relay2) b += 2;
+  if (relay2) b++;
+  if (relay1) b += 2;
  
   Serial.write((byte)0xA0);
   Serial.write((byte)0x04);
