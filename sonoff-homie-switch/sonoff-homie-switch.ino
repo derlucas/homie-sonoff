@@ -3,7 +3,6 @@
 #define PIN_LED     13      // PIN 12 / HSPI_MOSI; UART0_CTS MTCK
 #define REL_PIN     12      // GPIO 12 = Red Led and Relay (0 = Off, 1 = On)
 
-#define BRAND "sonoff-switch"
 #define FW_NAME "sonoff-relay"
 #define FW_VERSION "1.0.1"
 
@@ -28,8 +27,7 @@ void setup() {
   digitalWrite(REL_PIN, LOW);
 
   Homie_setFirmware(FW_NAME, FW_VERSION);
-  Homie_setBrand(BRAND);
-  Homie_setBrand("sonoff-switch");
+  Homie_setBrand(FW_NAME);
   Homie.setLedPin(PIN_LED, LOW);
   relayNode.advertise("on").settable(relayHandler);
   Homie.setup();
